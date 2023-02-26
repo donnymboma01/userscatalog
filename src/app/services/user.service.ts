@@ -22,8 +22,10 @@ export class UserService {
   }
 
   // fetch one user using the user UUID.
-  public getUser(uuid: number = 1): Observable<any> {
-    return this.http.get<any>(`${this.apiURL}/?uuid=${uuid}`);
+  public getUser(uuid: string): Observable<any> {
+    return this.http
+      .get<any>(`${this.apiURL}/?uuid=${uuid}`)
+      .pipe(map((response) => this.processResponse(response)));
   }
 
   //-------------------------------Methodes privée -----------------------

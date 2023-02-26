@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
+import { tap } from 'rxjs/operators';
+import { Response } from 'src/app/models/response.interface';
 import { UserService } from 'src/app/services/user.service';
 
 @Component({
@@ -8,6 +10,10 @@ import { UserService } from 'src/app/services/user.service';
   styleUrls: ['./userdetail.component.css'],
 })
 export class UserdetailComponent implements OnInit {
+  public response: Response;
+  public mode: 'edit' | 'locked' = 'locked';
+  public buttonText: string = 'Edit';
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private userService: UserService
@@ -16,10 +22,17 @@ export class UserdetailComponent implements OnInit {
   ngOnInit(): void {
     this.activatedRoute.paramMap.subscribe((params: ParamMap) => {
       this.userService
-        .getUser(+params.get('uuid')!)
-        .subscribe((response: any) => {
-          console.log(response);
-        });
+        .getUser(params.get('uuid')!)
+        .pipe(
+          tap((response) => (this.response = response)),
+          tap((items) => console.log(items))
+        )
+        .subscribe();
     });
+  }
+
+  public changeMode(mode?: 'edit' | 'locked'): void {
+    console.log(mode);
+    this.mode = this.mode === 'locked' ? 'edit' : 'locked';
   }
 }
